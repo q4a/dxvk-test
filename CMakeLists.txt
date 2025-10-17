@@ -16,15 +16,11 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Rel
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Debug)
 
 if (NOT WIN32)
-    # Verbose output
-    add_compile_options(-v)
-    add_link_options(-v)
-
     option(USE_OLD_DXVK "Use old DXVK Native for DXGI" OFF)
     if (USE_OLD_DXVK)
         message("Using DXVK Native for D3D11 API")
         set(DXVK_TYPE "native")
-        set(DXVK_GIT_REPOSITORY "https://github.com/misyltoad/dxvk-native")
+        set(DXVK_GIT_REPOSITORY "https://github.com/q4a/dxvk-native")
         set(DXVK_GIT_TAG "master")
         set(DXVK_EXTRA_PARAM "")
     else()
@@ -42,6 +38,7 @@ if (NOT WIN32)
         "${DXVK_SOURCE_DIR}/include/native/windows"
     )
     set(DIRECTX_LIBS
+        "${DXVK_BINARY_DIR}/src/d3d11/libdxvk_d3d11.so"
         "${DXVK_BINARY_DIR}/src/dxgi/libdxvk_dxgi.so"
     )
     ExternalProject_Add(dxvk
@@ -52,11 +49,12 @@ if (NOT WIN32)
         SOURCE_DIR        ${DXVK_SOURCE_DIR}
         BINARY_DIR        ${DXVK_BINARY_DIR}
         CONFIGURE_HANDLED_BY_BUILD ON
-        CONFIGURE_COMMAND meson setup ../dxvk-src-${DXVK_TYPE} --buildtype=debug ${DXVK_EXTRA_PARAM} -Denable_d3d9=false -Denable_d3d10=false -Denable_d3d11=false -Denable_dxgi=true
+        CONFIGURE_COMMAND meson setup ../dxvk-src-${DXVK_TYPE} --buildtype=debug ${DXVK_EXTRA_PARAM} -Denable_d3d9=false -Denable_d3d10=false -Denable_d3d11=true -Denable_dxgi=true
         BUILD_COMMAND     ninja
         INSTALL_COMMAND   ""
         BUILD_BYPRODUCTS  ${DIRECTX_LIBS}
     )
+    find_package(SDL2 CONFIG REQUIRED)
 endif()
 
 set(SRC_FILES source.cpp)
@@ -68,6 +66,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE
     ${DIRECTX_INCLUDE_DIRS}
 )
 target_link_libraries(${PROJECT_NAME} PRIVATE
+    SDL2::SDL2
     ${DIRECTX_LIBS}
 )
 endif()

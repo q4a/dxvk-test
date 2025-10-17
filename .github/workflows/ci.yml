@@ -1,0 +1,28 @@
+name: CI
+
+on: [push, pull_request]
+
+jobs:
+  windows-cmake:
+    name: Windows cmake ${{matrix.Configuration}} ${{matrix.Platform}}
+    runs-on: windows-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        Configuration: [Debug]
+        Platform: [x64]
+    steps:
+    - uses: actions/checkout@main
+      with:
+        submodules: recursive
+    - uses: ilammy/msvc-dev-cmd@v1
+    - name: Build
+      run: |
+        cmake --preset='ninja-${{matrix.Configuration}}-${{matrix.Platform}}'
+        cmake --build --preset='${{matrix.Configuration}}-${{matrix.Platform}}'
+
+    - name: Run test
+      run: |
+        pwd
+        ./build/ninja-${{matrix.Configuration}}-${{matrix.Platform}}/${{matrix.Configuration}}/dxvk-test.exe
+

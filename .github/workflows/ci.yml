@@ -40,7 +40,7 @@ jobs:
 
     - name: Install libs
       run: |
-        sudo apt-get update && sudo apt-get install libsdl2-dev libvulkan-dev glslang-tools clang meson ninja-build
+        sudo apt-get update && sudo apt-get install libsdl2-dev mesa-vulkan-drivers vulkan-tools libvulkan-dev glslang-tools clang meson ninja-build
     - name: Build
       run: |
         export CC=clang && export CXX=clang++
@@ -50,5 +50,6 @@ jobs:
 
     - name: Run test
       run: |
+        vulkaninfo --summary
         pwd
         DXVK_WSI_DRIVER=SDL2 ./build/Ninja-${{matrix.Configuration}}/Debug/dxvk-test

@@ -1,44 +1,31 @@
 {
-  "version": 3,
-  "cmakeMinimumRequired": {
-    "major": 3,
-    "minor": 20,
-    "patch": 0
-  },
+  "version": 2,
   "configurePresets": [
     {
-      "name": "ninja-Release-x64",
-      "generator": "Ninja Multi-Config",
-      "binaryDir": "${sourceDir}/build/${presetName}",
-      "architecture": {
-        "value": "x64",
-        "strategy": "external"
-      },
-      "cacheVariables": { "CMAKE_BUILD_TYPE": "Release" }
+      "name": "base", "hidden": true, "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build/${presetName}"
     },
     {
-      "name": "ninja-Debug-x64",
-      "generator": "Ninja Multi-Config",
-      "binaryDir": "${sourceDir}/build/${presetName}",
-      "architecture": {
-        "value": "x64",
-        "strategy": "external"
-      },
-      "cacheVariables": { "CMAKE_BUILD_TYPE": "Debug" }
-    }
-  ],
-  "buildPresets": [
-    {
-      "name": "Release-x64",
-      "displayName": "Release x64",
-      "configurePreset": "ninja-Release-x64",
-      "configuration": "Release"
+      "name": "OLD_DXVK", "hidden": true,
+      "cacheVariables": {
+        "USE_OLD_DXVK": { "value": "ON", "type": "BOOL" }
+      }
     },
     {
-      "name": "Debug-x64",
-      "displayName": "Debug x64",
-      "configurePreset": "ninja-Debug-x64",
-      "configuration": "Debug"
-    }
+      "name": "Release", "hidden": true,
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release"
+      }
+    },
+    {
+      "name": "Debug", "hidden": true,
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug"
+      }
+    },
+    { "name": "Ninja-Release",   "inherits": [ "base", "Release" ] },
+    { "name": "Ninja-Debug",     "inherits": [ "base", "Debug" ] },
+    { "name": "Ninja-Release-Old",   "inherits": [ "base", "Release","OLD_DXVK" ] },
+    { "name": "Ninja-Debug-Old",     "inherits": [ "base", "Debug","OLD_DXVK" ] }
   ]
 }

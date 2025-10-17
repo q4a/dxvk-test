@@ -4,25 +4,51 @@ on: [push, pull_request]
 
 jobs:
   windows-cmake:
-    name: Windows cmake ${{matrix.Configuration}} ${{matrix.Platform}}
+    name: Windows cmake ${{matrix.Configuration}}
     runs-on: windows-latest
     strategy:
       fail-fast: false
       matrix:
         Configuration: [Debug]
-        Platform: [x64]
     steps:
     - uses: actions/checkout@main
       with:
         submodules: recursive
+
     - uses: ilammy/msvc-dev-cmd@v1
     - name: Build
       run: |
-        cmake --preset='ninja-${{matrix.Configuration}}-${{matrix.Platform}}'
-        cmake --build --preset='${{matrix.Configuration}}-${{matrix.Platform}}'
+        cmake --preset='Ninja-${{matrix.Configuration}}'
+        cmake --build build/Ninja-${{matrix.Configuration}}
 
     - name: Run test
       run: |
         pwd
-        ./build/ninja-${{matrix.Configuration}}-${{matrix.Platform}}/${{matrix.Configuration}}/dxvk-test.exe
+        ./build/Ninja-${{matrix.Configuration}}/${{matrix.Configuration}}/dxvk-test.exe
 
+  linux-cmake:
+    name: Linux cmake ${{matrix.Configuration}}
+    strategy:
+      fail-fast: false
+      matrix:
+        Configuration: [Debug, Debug-Old]
+    runs-on: ubuntu-24.04
+    steps:
+    - uses: actions/checkout@main
+      with:
+        submodules: recursive
+
+    - name: Install libs
+      run: |
+        sudo apt-get update && sudo apt-get install libvulkan-dev clang meson ninja-build
+    - name: Build
+      run: |
+        export CC=clang && export CXX=clang++
+        ${CXX} --version && cmake --version
+        cmake --preset=Ninja-${{matrix.Configuration}}
+        cmake --build build/Ninja-${{matrix.Configuration}}
+
+    - name: Run test
+      run: |
+        pwd
+        DXVK_WSI_DRIVER=SDL2 ./build/Ninja-${{matrix.Configuration}}/${{matrix.Configuration}}/dxvk-test

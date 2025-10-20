@@ -18,6 +18,12 @@
       }
     },
     {
+      "name": "DXVK_THEN_VKD3D", "hidden": true,
+      "cacheVariables": {
+        "USE_DXVK_THEN_VKD3D_HEADERS": { "value": "ON", "type": "BOOL" }
+      }
+    },
+    {
       "name": "Release", "hidden": true,
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Release"
@@ -32,7 +38,9 @@
     { "name": "Ninja-Release",     "inherits": [ "base", "Release" ] },
     { "name": "Ninja-Release-Old", "inherits": [ "base", "Release","OLD_DXVK" ] },
     { "name": "Ninja-Debug",       "inherits": [ "base", "Debug" ] },
-    { "name": "Ninja-Debug-Old",   "inherits": [ "base", "Debug","OLD_DXVK" ] },
+    { "name": "Ninja-Debug-DXVK1", "inherits": [ "base", "Debug", "DXVK_THEN_VKD3D" ] },
+    { "name": "Ninja-Debug-Old",       "inherits": [ "base", "Debug","OLD_DXVK" ] },
+    { "name": "Ninja-Debug-Old-DXVK1", "inherits": [ "base", "Debug","OLD_DXVK", "DXVK_THEN_VKD3D" ] },
     { "name": "Ninja-Debug-NoDXVK", "inherits": [ "base", "Debug", "NO_DXVK" ] }
   ]
 }

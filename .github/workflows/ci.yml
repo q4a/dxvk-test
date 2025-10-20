@@ -47,6 +47,8 @@ jobs:
         ${CXX} --version && cmake --version
         cmake --preset=Ninja-${{matrix.Configuration}}
         cmake --build build/Ninja-${{matrix.Configuration}}
+        cmake --preset=Ninja-${{matrix.Configuration}}-DXVK1
+        cmake --build build/Ninja-${{matrix.Configuration}}-DXVK1
         if [ "${{matrix.Configuration}}" = "Debug" ]; then
         cmake --preset=Ninja-${{matrix.Configuration}}-NoDXVK
         cmake --build build/Ninja-${{matrix.Configuration}}-NoDXVK
@@ -58,6 +60,8 @@ jobs:
         pwd
         echo ${{matrix.Configuration}} test result:
         DXVK_WSI_DRIVER=SDL2 ./build/Ninja-${{matrix.Configuration}}/Debug/dxvk-test
+        echo ${{matrix.Configuration}}-DXVK1 test result:
+        DXVK_WSI_DRIVER=SDL2 ./build/Ninja-${{matrix.Configuration}}-DXVK1/Debug/dxvk-test
         if [ "${{matrix.Configuration}}" = "Debug" ]; then
         echo ${{matrix.Configuration}}-NoDXVK test result:
         ./build/Ninja-${{matrix.Configuration}}-NoDXVK/Debug/dxvk-test

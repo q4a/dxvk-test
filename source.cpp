@@ -1,17 +1,28 @@
 #include <iostream>
 
-#ifdef DISABLE_DXVK
-#include <vkd3d_utils.h>
-#else
+#ifdef _WIN32
 #include <d3dcompiler.h>
 #include <dxgi.h>
-#ifdef _WIN32
 #pragma comment (lib, "DXGI.lib")
 #pragma comment (lib, "d3dcompiler.lib")
-#else
+#else // _WIN32
+
+#if defined(DISABLE_DXVK)
+#include <vkd3d_utils.h>
+#elif defined(USE_DXVK_THEN_VKD3D_HEADERS)
+#include <dxgi.h>
+#define __VKD3D_WINDOWS_H
+#define __VKD3D_UNKNOWN_H
+#define __vkd3d_dxgibase_h__
+#include <vkd3d_utils.h>
+#include <SDL2/SDL.h>
+#else // use only DXVK headers
+#include <d3dcompiler.h>
+#include <dxgi.h>
 #include <SDL2/SDL.h>
 #endif
-#endif
+
+#endif // _WIN32
 
 int main() {
 	ID3DBlob* codeBufferBlob = nullptr;

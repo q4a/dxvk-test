@@ -56,7 +56,9 @@ jobs:
       run: |
         vulkaninfo --summary
         pwd
+        echo ${{matrix.Configuration}} test result:
         DXVK_WSI_DRIVER=SDL2 ./build/Ninja-${{matrix.Configuration}}/Debug/dxvk-test
         if [ "${{matrix.Configuration}}" = "Debug" ]; then
+        echo ${{matrix.Configuration}}-NoDXVK test result:
         ./build/Ninja-${{matrix.Configuration}}-NoDXVK/Debug/dxvk-test
         fi

@@ -84,12 +84,12 @@ if (NOT WIN32)
         # result comman will be: ./configure "CPPFLAGS=-O3 -DNDEBUG -DVKD3D_NO_TRACE_MESSAGES" "CFLAGS=-O3 -DNDEBUG -DVKD3D_NO_TRACE_MESSAGES"
         CONFIGURE_COMMAND ./autogen.sh && ${CMAKE_COMMAND} -E env ${VKD3D_CONFIG}
         BUILD_COMMAND     make -j${N}
-        BUILD_BYPRODUCTS  ${VKD3D_SOURCE_DIR}/.libs/libvkd3d-utils.a
+        BUILD_BYPRODUCTS  ${VKD3D_SOURCE_DIR}/.libs/libvkd3d-utils.so
         INSTALL_COMMAND   ""
     )
     ExternalProject_Get_property(vkd3d SOURCE_DIR BINARY_DIR)
     set(DIRECTX_INCLUDE_DIRS ${DIRECTX_INCLUDE_DIRS} "${VKD3D_SOURCE_DIR}/include")
-    set(DIRECTX_LIBS ${DIRECTX_LIBS} "${VKD3D_SOURCE_DIR}/.libs/libvkd3d-utils.a")
+    set(DIRECTX_LIBS ${DIRECTX_LIBS} "${VKD3D_SOURCE_DIR}/.libs/libvkd3d-utils.so")
     add_dependencies(${PROJECT_NAME} vkd3d)
 
     target_include_directories(${PROJECT_NAME} PRIVATE

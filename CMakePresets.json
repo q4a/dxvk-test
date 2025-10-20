@@ -12,6 +12,12 @@
       }
     },
     {
+      "name": "NO_DXVK", "hidden": true,
+      "cacheVariables": {
+        "DISABLE_DXVK": { "value": "ON", "type": "BOOL" }
+      }
+    },
+    {
       "name": "Release", "hidden": true,
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Release"
@@ -23,9 +29,10 @@
         "CMAKE_BUILD_TYPE": "Debug"
       }
     },
-    { "name": "Ninja-Release",   "inherits": [ "base", "Release" ] },
-    { "name": "Ninja-Debug",     "inherits": [ "base", "Debug" ] },
-    { "name": "Ninja-Release-Old",   "inherits": [ "base", "Release","OLD_DXVK" ] },
-    { "name": "Ninja-Debug-Old",     "inherits": [ "base", "Debug","OLD_DXVK" ] }
+    { "name": "Ninja-Release",     "inherits": [ "base", "Release" ] },
+    { "name": "Ninja-Release-Old", "inherits": [ "base", "Release","OLD_DXVK" ] },
+    { "name": "Ninja-Debug",       "inherits": [ "base", "Debug" ] },
+    { "name": "Ninja-Debug-Old",   "inherits": [ "base", "Debug","OLD_DXVK" ] },
+    { "name": "Ninja-Debug-NoDXVK", "inherits": [ "base", "Debug", "NO_DXVK" ] }
   ]
 }

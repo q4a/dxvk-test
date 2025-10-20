@@ -1,4 +1,6 @@
 # ignore temp files
 .vs/
 build*/*
+cmake-build*/*
+CMakeLists.txt.user
 *.log

@@ -40,16 +40,23 @@ jobs:
 
     - name: Install libs
       run: |
-        sudo apt-get update && sudo apt-get install libsdl2-dev mesa-vulkan-drivers vulkan-tools libvulkan-dev glslang-tools clang meson ninja-build
+        sudo apt-get update && sudo apt-get install libsdl2-dev mesa-vulkan-drivers vulkan-tools libvulkan-dev glslang-tools clang meson ninja-build libjson-perl spirv-headers wine64-tools
     - name: Build
       run: |
         export CC=clang && export CXX=clang++
         ${CXX} --version && cmake --version
         cmake --preset=Ninja-${{matrix.Configuration}}
         cmake --build build/Ninja-${{matrix.Configuration}}
+        if [ "${{matrix.Configuration}}" = "Debug" ]; then
+        cmake --preset=Ninja-${{matrix.Configuration}}-NoDXVK
+        cmake --build build/Ninja-${{matrix.Configuration}}-NoDXVK
+        fi
 
     - name: Run test
       run: |
         vulkaninfo --summary
         pwd
         DXVK_WSI_DRIVER=SDL2 ./build/Ninja-${{matrix.Configuration}}/Debug/dxvk-test
+        if [ "${{matrix.Configuration}}" = "Debug" ]; then
+        ./build/Ninja-${{matrix.Configuration}}-NoDXVK/Debug/dxvk-test
+        fi

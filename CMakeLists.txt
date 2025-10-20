@@ -15,8 +15,16 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Release)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Debug)
 
+set(SRC_FILES source.cpp)
+add_executable(${PROJECT_NAME} ${SRC_FILES})
+
 if (NOT WIN32)
+    include(ExternalProject)
+    option(DISABLE_DXVK "Disable DXVK calls (use only VKD3D)" OFF)
     option(USE_OLD_DXVK "Use old DXVK Native for DXGI" OFF)
+    if (DISABLE_DXVK)
+        add_definitions(-DDISABLE_DXVK)
+    else()
     if (USE_OLD_DXVK)
         message("Using DXVK Native for D3D11 API")
         set(DXVK_TYPE "native")
@@ -30,7 +38,6 @@ if (NOT WIN32)
         set(DXVK_GIT_TAG "master")
         set(DXVK_EXTRA_PARAM "-Denable_d3d8=false")
     endif()
-    include(ExternalProject)
     set(DXVK_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/build/dxvk-src-${DXVK_TYPE}")
     set(DXVK_BINARY_DIR "${CMAKE_CURRENT_SOURCE_DIR}/build/dxvk-bin-${DXVK_TYPE}")
     set(DIRECTX_INCLUDE_DIRS
@@ -54,19 +61,42 @@ if (NOT WIN32)
         INSTALL_COMMAND   ""
         BUILD_BYPRODUCTS  ${DIRECTX_LIBS}
     )
+    add_dependencies(${PROJECT_NAME} dxvk)
+    endif()
+
     find_package(SDL2 CONFIG REQUIRED)
-endif()
 
-set(SRC_FILES source.cpp)
-add_executable(${PROJECT_NAME} ${SRC_FILES})
+    include(ProcessorCount)
+    ProcessorCount(N)
+    message("ProcessorCount = ${N}")
+    set(VKD3D_CONFIG "./configure")
+    #list(APPEND VKD3D_CONFIG "CPPFLAGS=-O3 -DNDEBUG -DVKD3D_NO_TRACE_MESSAGES")
+    #list(APPEND VKD3D_CONFIG   "CFLAGS=-O3 -DNDEBUG -DVKD3D_NO_TRACE_MESSAGES")
+    set(VKD3D_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/build/vkd3d-src")
+    ExternalProject_Add(vkd3d
+        GIT_REPOSITORY    https://gitlab.winehq.org/wine/vkd3d.git
+        GIT_TAG           vkd3d-1.17
+        GIT_SHALLOW       ON
+        BUILD_ALWAYS      OFF
+        SOURCE_DIR        ${VKD3D_SOURCE_DIR}
+        BUILD_IN_SOURCE   ON
+        CONFIGURE_HANDLED_BY_BUILD ON
+        # result comman will be: ./configure "CPPFLAGS=-O3 -DNDEBUG -DVKD3D_NO_TRACE_MESSAGES" "CFLAGS=-O3 -DNDEBUG -DVKD3D_NO_TRACE_MESSAGES"
+        CONFIGURE_COMMAND ./autogen.sh && ${CMAKE_COMMAND} -E env ${VKD3D_CONFIG}
+        BUILD_COMMAND     make -j${N}
+        BUILD_BYPRODUCTS  ${VKD3D_SOURCE_DIR}/.libs/libvkd3d-utils.a
+        INSTALL_COMMAND   ""
+    )
+    ExternalProject_Get_property(vkd3d SOURCE_DIR BINARY_DIR)
+    set(DIRECTX_INCLUDE_DIRS ${DIRECTX_INCLUDE_DIRS} "${VKD3D_SOURCE_DIR}/include")
+    set(DIRECTX_LIBS ${DIRECTX_LIBS} "${VKD3D_SOURCE_DIR}/.libs/libvkd3d-utils.a")
+    add_dependencies(${PROJECT_NAME} vkd3d)
 
-if(NOT WIN32)
-add_dependencies(${PROJECT_NAME} dxvk)
-target_include_directories(${PROJECT_NAME} PRIVATE
-    ${DIRECTX_INCLUDE_DIRS}
-)
-target_link_libraries(${PROJECT_NAME} PRIVATE
-    SDL2::SDL2
-    ${DIRECTX_LIBS}
-)
+    target_include_directories(${PROJECT_NAME} PRIVATE
+        ${DIRECTX_INCLUDE_DIRS}
+    )
+    target_link_libraries(${PROJECT_NAME} PRIVATE
+        SDL2::SDL2
+        ${DIRECTX_LIBS}
+    )
 endif()

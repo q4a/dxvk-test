@@ -16,6 +16,21 @@
 #define __vkd3d_dxgibase_h__
 #include <vkd3d_utils.h>
 #include <SDL2/SDL.h>
+#elif defined(USE_VKD3D_THEN_DXVK_HEADERS)
+#include <vkd3d_utils.h>
+#include <vkd3d_dxgi.h>
+#define __dxgi_h__
+#ifndef WINBOOL
+typedef BOOL WINBOOL;
+#endif
+#ifndef LPSTR
+typedef char* LPSTR;
+typedef const char* LPCSTR;
+#endif
+#include <d3d11.h>
+//#define __dxgitype_h__
+//#include <dxgi.h>
+//#include <SDL2/SDL.h>
 #else // use only DXVK headers
 #include <d3dcompiler.h>
 #include <dxgi.h>

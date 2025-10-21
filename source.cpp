@@ -40,6 +40,19 @@ typedef const char* LPCSTR;
 #endif // _WIN32
 
 int main() {
+	std::cout << "sizeof(REFIID)==" << sizeof(REFIID) << std::endl;
+	std::cout << "sizeof(IUnknown)==" << sizeof(IUnknown) << std::endl;
+	std::cout << "sizeof(D3D_FEATURE_LEVEL)==" << sizeof(D3D_FEATURE_LEVEL) << std::endl;
+	std::cout << "sizeof(SIZE_T)==" << sizeof(SIZE_T) << std::endl;
+	std::cout << "sizeof(D3D12_ROOT_SIGNATURE_DESC)==" << sizeof(D3D12_ROOT_SIGNATURE_DESC) << std::endl;
+	std::cout << "sizeof(D3D_ROOT_SIGNATURE_VERSION)==" << sizeof(D3D_ROOT_SIGNATURE_VERSION) << std::endl;
+	std::cout << "sizeof(ID3DBlob)==" << sizeof(ID3DBlob) << std::endl;
+	std::cout << "sizeof(D3D12_VERSIONED_ROOT_SIGNATURE_DESC)==" << sizeof(D3D12_VERSIONED_ROOT_SIGNATURE_DESC) << std::endl;
+	std::cout << "sizeof(D3D_SHADER_MACRO)==" << sizeof(D3D_SHADER_MACRO) << std::endl;
+	std::cout << "sizeof(ID3DInclude)==" << sizeof(ID3DInclude) << std::endl;
+	std::cout << "sizeof(UINT)==" << sizeof(UINT) << std::endl;
+	std::cout << "sizeof(HANDLE)==" << sizeof(HANDLE) << std::endl;
+	std::cout << "sizeof(D3D_BLOB_PART)==" << sizeof(D3D_BLOB_PART) << std::endl;
 	ID3DBlob* codeBufferBlob = nullptr;
 	HRESULT hRet = D3DCreateBlob(5760, &codeBufferBlob);
 	if (FAILED(hRet))

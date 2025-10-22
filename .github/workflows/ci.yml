@@ -31,7 +31,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        Configuration: [Debug, Debug-Old]
+        Configuration: [Debug, Debug-DXVK1, Debug-Old, Debug-Old-DXVK1, Debug-NoDXVK]
     runs-on: ubuntu-24.04
     steps:
     - uses: actions/checkout@main
@@ -47,22 +47,8 @@ jobs:
         ${CXX} --version && cmake --version
         cmake --preset=Ninja-${{matrix.Configuration}}
         cmake --build build/Ninja-${{matrix.Configuration}}
-        cmake --preset=Ninja-${{matrix.Configuration}}-DXVK1
-        cmake --build build/Ninja-${{matrix.Configuration}}-DXVK1
-        if [ "${{matrix.Configuration}}" = "Debug" ]; then
-        cmake --preset=Ninja-${{matrix.Configuration}}-NoDXVK
-        cmake --build build/Ninja-${{matrix.Configuration}}-NoDXVK
-        fi
 
     - name: Run test
       run: |
-        vulkaninfo --summary
-        pwd
         echo ${{matrix.Configuration}} test result:
         DXVK_WSI_DRIVER=SDL2 ./build/Ninja-${{matrix.Configuration}}/Debug/dxvk-test
-        echo ${{matrix.Configuration}}-DXVK1 test result:
-        DXVK_WSI_DRIVER=SDL2 ./build/Ninja-${{matrix.Configuration}}-DXVK1/Debug/dxvk-test
-        if [ "${{matrix.Configuration}}" = "Debug" ]; then
-        echo ${{matrix.Configuration}}-NoDXVK test result:
-        ./build/Ninja-${{matrix.Configuration}}-NoDXVK/Debug/dxvk-test
-        fi

@@ -9,6 +9,10 @@
 
 #if defined(DISABLE_DXVK)
 #include <vkd3d_utils.h>
+#elif defined(USE_WINE)
+#include <SDL2/SDL.h>
+#include <wine/wine/windows/d3dcompiler.h>
+#include <dxgi.h>
 #elif defined(USE_DXVK_THEN_VKD3D_HEADERS)
 #include <SDL2/SDL.h>
 #include <dxgi.h>

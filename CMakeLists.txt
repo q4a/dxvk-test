@@ -74,6 +74,12 @@ if (NOT WIN32)
 
     find_package(SDL2 CONFIG REQUIRED)
 
+    option(USE_WINE "Use WINE - ON or VKD3D - OFF for d3dcompiler" OFF)
+    if (USE_WINE)
+        add_definitions(-DUSE_WINE)
+        #find_package(wine CONFIG REQUIRED)
+        set(DIRECTX_LIBS ${DIRECTX_LIBS} "/usr/lib/x86_64-linux-gnu/wine/x86_64-unix/libd3dcompiler.a")
+    else()
     include(ProcessorCount)
     ProcessorCount(N)
     message("ProcessorCount = ${N}")
@@ -99,6 +105,7 @@ if (NOT WIN32)
     set(DIRECTX_INCLUDE_DIRS ${DIRECTX_INCLUDE_DIRS} "${VKD3D_SOURCE_DIR}/include")
     set(DIRECTX_LIBS ${DIRECTX_LIBS} "${VKD3D_SOURCE_DIR}/.libs/libvkd3d-utils.a")
     add_dependencies(${PROJECT_NAME} vkd3d)
+    endif()
 
     target_include_directories(${PROJECT_NAME} PRIVATE
         ${DIRECTX_INCLUDE_DIRS}

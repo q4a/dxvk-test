@@ -47,7 +47,13 @@ typedef const char* LPCSTR;
 
 #endif // _WIN32
 
+#define SHOW(...) std::cout << #__VA_ARGS__ << " : " << __VA_ARGS__ << std::endl
+
 int main() {
+	SHOW( std::is_same_v<int, SIZE_T> );
+	SHOW( std::is_same_v<size_t, SIZE_T> );
+	SHOW( std::is_same_v<size_t, unsigned long> );
+	SHOW( std::is_same_v<SIZE_T, unsigned long> );
 	std::cout << "sizeof(REFIID)==" << sizeof(REFIID) << std::endl;
 	std::cout << "sizeof(IUnknown)==" << sizeof(IUnknown) << std::endl;
 	std::cout << "sizeof(D3D_FEATURE_LEVEL)==" << sizeof(D3D_FEATURE_LEVEL) << std::endl;

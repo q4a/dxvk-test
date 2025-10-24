@@ -83,14 +83,14 @@ if (NOT WIN32)
     set(VKD3D_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/build/vkd3d-src")
     ExternalProject_Add(vkd3d
         GIT_REPOSITORY    https://github.com/q4a/vkd3d
-        GIT_TAG           types
+        GIT_TAG           dxvk
         GIT_SHALLOW       ON
         BUILD_ALWAYS      OFF
         SOURCE_DIR        ${VKD3D_SOURCE_DIR}
         BUILD_IN_SOURCE   ON
         CONFIGURE_HANDLED_BY_BUILD ON
         # result comman will be: ./configure "CPPFLAGS=-O3 -DNDEBUG -DVKD3D_NO_TRACE_MESSAGES" "CFLAGS=-O3 -DNDEBUG -DVKD3D_NO_TRACE_MESSAGES"
-        CONFIGURE_COMMAND ./autogen.sh && ${CMAKE_COMMAND} -E env ${VKD3D_CONFIG}
+        CONFIGURE_COMMAND ${CMAKE_COMMAND} -E env ${VKD3D_CONFIG}
         BUILD_COMMAND     make -j${N}
         BUILD_BYPRODUCTS  ${VKD3D_SOURCE_DIR}/.libs/libvkd3d-utils.so
         INSTALL_COMMAND   ""

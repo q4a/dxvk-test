@@ -55,7 +55,7 @@ jobs:
           apt-get update -q -y
           apt-get install -q -y automake-1.17 bison cmake flex gcc git libsdl2-dev mesa-vulkan-drivers vulkan-tools libvulkan-dev glslang-tools clang meson ninja-build libjson-perl spirv-headers wine64-tools
         run: |
-          export CC=clang && export CXX=clang++
+          export CC=gcc && export CXX=g++
           ${CXX} --version && cmake --version
           cmake --preset=Ninja-${{matrix.Configuration}}
           cmake --build build/Ninja-${{matrix.Configuration}}

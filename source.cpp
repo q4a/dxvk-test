@@ -12,18 +12,9 @@
 #elif defined(USE_DXVK_THEN_VKD3D_HEADERS)
 #include <SDL2/SDL.h>
 #include <dxgi.h>
-/*
-#define __VKD3D_WINDOWS_H
-#define __VKD3D_UNKNOWN_H
-#define __vkd3d_dxgibase_h__
-#include <vkd3d_utils.h>
-*/
-#include <d3dcommon.h>
 #define _INC_WINDOWS
-#define __vkd3d_d3dcommon_h__
+#define __IUnknown_INTERFACE_DEFINED__
 #define __vkd3d_dxgibase_h__
-//#define __vkd3d_dxgiformat_h__
-//#include <vkd3d_d3dcompiler.h>
 #include <vkd3d_utils.h>
 #elif defined(USE_VKD3D_THEN_DXVK_HEADERS)
 #include <vkd3d_utils.h>

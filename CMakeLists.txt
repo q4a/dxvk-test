@@ -20,101 +20,41 @@ add_executable(${PROJECT_NAME} ${SRC_FILES})
 
 if (NOT WIN32)
     include(ExternalProject)
-    option(USE_DXVK_THEN_VKD3D_HEADERS "Use DXVK headers 1st and then VKD3D headers" OFF)
-    if (USE_DXVK_THEN_VKD3D_HEADERS)
-        add_definitions(-DUSE_DXVK_THEN_VKD3D_HEADERS)
-    endif()
-    option(USE_VKD3D_THEN_DXVK_HEADERS "Use VKD3D headers 1st and then DXVK headers" OFF)
-    if (USE_VKD3D_THEN_DXVK_HEADERS)
-        add_definitions(-DUSE_VKD3D_THEN_DXVK_HEADERS)
-    endif()
-    option(DISABLE_DXVK "Disable DXVK calls (use only VKD3D)" OFF)
-    if (DISABLE_DXVK)
-        add_definitions(-DDISABLE_DXVK)
-    else()
-    option(USE_OLD_DXVK "Use old DXVK Native for DXGI" OFF)
-    if (USE_OLD_DXVK)
-        message("Using DXVK Native for D3D11 API")
-        set(DXVK_TYPE "native")
-        set(DXVK_GIT_REPOSITORY "https://github.com/q4a/dxvk-native")
-        set(DXVK_GIT_TAG "master")
-        set(DXVK_EXTRA_PARAM "")
-    else()
-        message("Using DXVK master for DXGI")
-        set(DXVK_TYPE "upstream")
-        set(DXVK_GIT_REPOSITORY "https://github.com/doitsujin/dxvk")
-        set(DXVK_GIT_TAG "master")
-        set(DXVK_EXTRA_PARAM "-Denable_d3d8=false")
-    endif()
-    set(DXVK_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/build/dxvk-src-${DXVK_TYPE}")
-    set(DXVK_BINARY_DIR "${CMAKE_CURRENT_SOURCE_DIR}/build/dxvk-bin-${DXVK_TYPE}")
-    set(DIRECTX_INCLUDE_DIRS
-        "${DXVK_SOURCE_DIR}/include/native/directx"
-        "${DXVK_SOURCE_DIR}/include/native/windows"
-    )
-    set(DIRECTX_LIBS
-        "${DXVK_BINARY_DIR}/src/d3d11/libdxvk_d3d11.so"
-        "${DXVK_BINARY_DIR}/src/dxgi/libdxvk_dxgi.so"
-    )
-    ExternalProject_Add(dxvk
-        GIT_REPOSITORY    ${DXVK_GIT_REPOSITORY}
-        GIT_TAG           ${DXVK_GIT_TAG}
-        GIT_SHALLOW       OFF
-        BUILD_ALWAYS      OFF
-        SOURCE_DIR        ${DXVK_SOURCE_DIR}
-        BINARY_DIR        ${DXVK_BINARY_DIR}
-        CONFIGURE_HANDLED_BY_BUILD ON
-        CONFIGURE_COMMAND meson setup ../dxvk-src-${DXVK_TYPE} --buildtype=debug ${DXVK_EXTRA_PARAM} -Denable_d3d9=false -Denable_d3d10=false -Denable_d3d11=true -Denable_dxgi=true
-        BUILD_COMMAND     ninja
-        INSTALL_COMMAND   ""
-        BUILD_BYPRODUCTS  ${DIRECTX_LIBS}
-    )
-    add_dependencies(${PROJECT_NAME} dxvk)
-    endif()
-
-    find_package(SDL2 CONFIG REQUIRED)
-
     include(ProcessorCount)
     ProcessorCount(N)
     message("ProcessorCount = ${N}")
     set(VKD3D_CONFIG "./configure")
-    list(APPEND VKD3D_CONFIG "CXX=clang++")
-    list(APPEND VKD3D_CONFIG  "CC=clang")
-    #list(APPEND VKD3D_CONFIG "CPPFLAGS=-fPIC")
-    #list(APPEND VKD3D_CONFIG   "CFLAGS=-fPIC")
     #list(APPEND VKD3D_CONFIG "CPPFLAGS=-O3 -DNDEBUG -DVKD3D_NO_TRACE_MESSAGES")
     #list(APPEND VKD3D_CONFIG   "CFLAGS=-O3 -DNDEBUG -DVKD3D_NO_TRACE_MESSAGES")
     set(VKD3D_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/build/vkd3d-src")
     ExternalProject_Add(vkd3d
-        GIT_REPOSITORY    https://github.com/q4a/vkd3d
-        GIT_TAG           dxvk
+        GIT_REPOSITORY    https://gitlab.winehq.org/wine/vkd3d
+        GIT_TAG           vkd3d-1.17
         GIT_SHALLOW       ON
         BUILD_ALWAYS      OFF
         SOURCE_DIR        ${VKD3D_SOURCE_DIR}
         BUILD_IN_SOURCE   ON
         CONFIGURE_HANDLED_BY_BUILD ON
         # result comman will be: ./configure "CPPFLAGS=-O3 -DNDEBUG -DVKD3D_NO_TRACE_MESSAGES" "CFLAGS=-O3 -DNDEBUG -DVKD3D_NO_TRACE_MESSAGES"
-        CONFIGURE_COMMAND ${CMAKE_COMMAND} -E env ${VKD3D_CONFIG}
+        CONFIGURE_COMMAND ./autogen.sh && ${CMAKE_COMMAND} -E env ${VKD3D_CONFIG}
         BUILD_COMMAND     make -j${N}
         BUILD_BYPRODUCTS  ${VKD3D_SOURCE_DIR}/.libs/libvkd3d-shader.a ${VKD3D_SOURCE_DIR}/.libs/libvkd3d-utils.a
         INSTALL_COMMAND   ""
     )
-    ExternalProject_Get_property(vkd3d SOURCE_DIR BINARY_DIR)
-    set(DIRECTX_INCLUDE_DIRS ${DIRECTX_INCLUDE_DIRS} "${VKD3D_SOURCE_DIR}/include")
-    set(DIRECTX_LIBS ${DIRECTX_LIBS}
+    set(DIRECTX_INCLUDE_DIRS "${VKD3D_SOURCE_DIR}/include")
+    set(DIRECTX_LIBS
 #        "${VKD3D_SOURCE_DIR}/.libs/libvkd3d.a"
 #        "${VKD3D_SOURCE_DIR}/.libs/libvkd3d-common.a"
-        "${VKD3D_SOURCE_DIR}/.libs/libvkd3d-shader.a"
+#        "${VKD3D_SOURCE_DIR}/.libs/libvkd3d-shader.a"
         "${VKD3D_SOURCE_DIR}/.libs/libvkd3d-utils.a"
     )
-    target_link_options(${PROJECT_NAME} PRIVATE -v -flto)
+    #target_link_options(${PROJECT_NAME} PRIVATE -v -flto)
     add_dependencies(${PROJECT_NAME} vkd3d)
 
     target_include_directories(${PROJECT_NAME} PRIVATE
         ${DIRECTX_INCLUDE_DIRS}
     )
     target_link_libraries(${PROJECT_NAME} PRIVATE
-        SDL2::SDL2
         ${DIRECTX_LIBS}
     )
 endif()

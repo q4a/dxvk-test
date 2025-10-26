@@ -31,7 +31,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        Configuration: [Debug, Debug-DXVK1, Debug-Old, Debug-Old-DXVK1, Debug-NoDXVK]
+        Configuration: [Debug]
     runs-on: ubuntu-24.04
     steps:
     - uses: actions/checkout@main
@@ -40,12 +40,10 @@ jobs:
 
     - name: Install libs
       run: |
-        sudo apt-get update && sudo apt-get install libsdl2-dev mesa-vulkan-drivers vulkan-tools libvulkan-dev glslang-tools clang meson ninja-build libjson-perl spirv-headers wine64-tools
-        wget https://launchpad.net/ubuntu/+source/automake-1.17/1:1.17-3ubuntu1/+build/30326801/+files/automake_1.17-3ubuntu1_all.deb
-        sudo apt-get install ./automake_1.17-3ubuntu1_all.deb
+        sudo apt-get update && sudo apt-get install mesa-vulkan-drivers vulkan-tools libvulkan-dev glslang-tools ninja-build libjson-perl spirv-headers wine64-tools
     - name: Build
       run: |
-        export CC=clang && export CXX=clang++
+        export CC=gcc && export CXX=g++
         ${CXX} --version && cmake --version
         cmake --preset=Ninja-${{matrix.Configuration}}
         cmake --build build/Ninja-${{matrix.Configuration}}

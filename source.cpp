@@ -19,12 +19,10 @@ int main() {
 	}
 
 	ID3DBlob* stripBuffer = nullptr;
-#ifdef _WIN32
 	hRet = D3DStripShader(codeBufferBlob->GetBufferPointer(), codeBufferBlob->GetBufferSize(), D3DCOMPILER_STRIP_PRIVATE_DATA, &stripBuffer);
 	if (FAILED(hRet)) {
 		std::cout << "As expected: failed to call D3DStripShader" << std::endl;
 	}
-#endif
 
 	return 0;
 }

@@ -50,5 +50,6 @@ jobs:
 
     - name: Run test
       run: |
+        ldd ./build/Ninja-${{matrix.Configuration}}/Debug/dxvk-test
         echo ${{matrix.Configuration}} test result:
-        DXVK_WSI_DRIVER=SDL2 ./build/Ninja-${{matrix.Configuration}}/Debug/dxvk-test
+        ./build/Ninja-${{matrix.Configuration}}/${{matrix.Configuration}}/dxvk-test

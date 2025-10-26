@@ -80,8 +80,8 @@ if (NOT WIN32)
     set(VKD3D_CONFIG "./configure")
     list(APPEND VKD3D_CONFIG "CXX=clang++")
     list(APPEND VKD3D_CONFIG  "CC=clang")
-    list(APPEND VKD3D_CONFIG "CPPFLAGS=-fPIC")
-    list(APPEND VKD3D_CONFIG   "CFLAGS=-fPIC")
+    #list(APPEND VKD3D_CONFIG "CPPFLAGS=-fPIC")
+    #list(APPEND VKD3D_CONFIG   "CFLAGS=-fPIC")
     #list(APPEND VKD3D_CONFIG "CPPFLAGS=-O3 -DNDEBUG -DVKD3D_NO_TRACE_MESSAGES")
     #list(APPEND VKD3D_CONFIG   "CFLAGS=-O3 -DNDEBUG -DVKD3D_NO_TRACE_MESSAGES")
     set(VKD3D_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/build/vkd3d-src")
@@ -96,12 +96,17 @@ if (NOT WIN32)
         # result comman will be: ./configure "CPPFLAGS=-O3 -DNDEBUG -DVKD3D_NO_TRACE_MESSAGES" "CFLAGS=-O3 -DNDEBUG -DVKD3D_NO_TRACE_MESSAGES"
         CONFIGURE_COMMAND ${CMAKE_COMMAND} -E env ${VKD3D_CONFIG}
         BUILD_COMMAND     make -j${N}
-        BUILD_BYPRODUCTS  ${VKD3D_SOURCE_DIR}/.libs/libvkd3d-utils.a
+        BUILD_BYPRODUCTS  ${VKD3D_SOURCE_DIR}/.libs/libvkd3d-shader.a ${VKD3D_SOURCE_DIR}/.libs/libvkd3d-utils.a
         INSTALL_COMMAND   ""
     )
     ExternalProject_Get_property(vkd3d SOURCE_DIR BINARY_DIR)
     set(DIRECTX_INCLUDE_DIRS ${DIRECTX_INCLUDE_DIRS} "${VKD3D_SOURCE_DIR}/include")
-    set(DIRECTX_LIBS ${DIRECTX_LIBS} "${VKD3D_SOURCE_DIR}/.libs/libvkd3d-utils.a")
+    set(DIRECTX_LIBS ${DIRECTX_LIBS}
+#        "${VKD3D_SOURCE_DIR}/.libs/libvkd3d.a"
+#        "${VKD3D_SOURCE_DIR}/.libs/libvkd3d-common.a"
+        "${VKD3D_SOURCE_DIR}/.libs/libvkd3d-shader.a"
+        "${VKD3D_SOURCE_DIR}/.libs/libvkd3d-utils.a"
+    )
     target_link_options(${PROJECT_NAME} PRIVATE -v -flto)
     add_dependencies(${PROJECT_NAME} vkd3d)
 
